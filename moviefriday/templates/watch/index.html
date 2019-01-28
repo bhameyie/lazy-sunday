@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block header %}
+    <h1>{% block title %}{{ movie.title }}{% endblock %}</h1>
+    {% if g.user %}
+        <a class="action" href="#">Special for {{ g.user.username }}</a>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+
+    {% if movie.is_mp4 %}
+        <video width="320" height="240" controls>
+            <source src="/vids/{{ movie.id }}/mp4/" type="video/mp4">
+        </video>
+    {% else %}
+        <b>Will be loading m3u8 file here</b>
+    {% endif %}
+{% endblock %}
