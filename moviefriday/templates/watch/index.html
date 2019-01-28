@@ -10,7 +10,7 @@
 
     {% if movie.is_mp4 %}
         <video width="320" height="240" controls>
-            <source src="/vids/{{ movie.id }}/mp4/" type="video/mp4">
+            <source src="/vids/{{ movie.id }}/mp4" type="video/mp4">
         </video>
     {% else %}
         <b>Will be loading m3u8 file here</b>

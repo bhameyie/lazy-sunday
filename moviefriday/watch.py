@@ -23,6 +23,7 @@ MB = 1 << 20
 BUFF_SIZE = 10 * MB
 
 
+@login_required
 @bp.route('/')
 def index():
     db = get_db()

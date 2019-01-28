@@ -54,7 +54,7 @@ def login():
 
         if error is None:
             session.clear()
-            session['user_id'] = user.id
+            session['user_id'] = str(user.id)
             return redirect(url_for('watch.index'))
 
         flash(error)
