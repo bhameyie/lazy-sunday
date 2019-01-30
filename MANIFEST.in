@@ -1,0 +1,7 @@
+include LICENSE
+include hls_stash
+include mp4_stash
+graft moviefriday/static
+graft moviefriday/templates
+graft tests
+global-exclude *.pyc
