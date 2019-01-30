@@ -1,15 +1,16 @@
 from dataclasses import dataclass
+from typing import Optional
 
 import bson
 
-from .db import DatabaseConfig
+from moviefriday.db import DatabaseConfig
 
 
 @dataclass
 class User:
     username: str
     password: str
-    id: bson.objectid
+    id: bson.objectid = bson.ObjectId()
 
 
 @dataclass
@@ -17,7 +18,7 @@ class Movie:
     title: str
     blob_id: str
     is_mp4: bool
-    id: str
+    id: str = None
 
 
 def convert_user_record(dico):
@@ -31,8 +32,8 @@ def convert_movie_record(dico):
     if dico is None:
         return None
 
-    return Movie(dico['title'], dico['blob_id'],
-                 dico['is_mp4'], str(dico['_id']))
+    return Movie(dico['title'], dico['blobId'],
+                 dico['isMp4'], str(dico['_id']))
 
 
 class MovieRepository:
@@ -43,6 +44,16 @@ class MovieRepository:
     def find_by_id(self, movie_id):
         found = self.movies.find_one({'_id': bson.ObjectId(movie_id)})
         return convert_movie_record(found)
+
+    def insert(self, movie: Movie):
+        for_insert = {
+            'title': movie.title,
+            'blobId': movie.blob_id,
+            'isMp4': movie.is_mp4,
+            '_id': bson.ObjectId()
+        }
+        self.movies.insert(for_insert)
+        return for_insert['_id']
 
 
 class UserRepository:
@@ -58,9 +69,10 @@ class UserRepository:
         for_insert = {
             'username': user.username,
             'password': user.password,
-            '_id': bson.ObjectId(user.id)
+            '_id': bson.ObjectId()
         }
         self.users.insert(for_insert)
+        return for_insert['_id']
 
     def find_by_id(self, user_id):
         found = self.users.find_one({'_id': bson.ObjectId(user_id)})

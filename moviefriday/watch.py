@@ -1,19 +1,17 @@
 # Video content range logic taken from https://github.com/go2starr/py-flask-video-stream
 
-from bson import ObjectId
-from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for,
-    Response)
-from werkzeug.exceptions import abort
-
+import logging
 import mimetypes
+import os
 import re
 
-from moviefriday.repositories import Movie
-from .auth import login_required
-from .db import get_db
-import os
-import logging
+from flask import (
+    Blueprint, render_template, request, Response, flash, redirect
+)
+
+from moviefriday.repositories import Movie, MovieRepository
+from moviefriday.auth import login_required
+from moviefriday.db import get_db
 
 LOG = logging.getLogger(__name__)
 
@@ -26,10 +24,22 @@ BUFF_SIZE = 10 * MB
 @login_required
 @bp.route('/')
 def index():
-    db = get_db()
+    movie_repo = MovieRepository(get_db())
     fakeMovie = Movie(title="Bunny", blob_id='BigBuckBunny.mp4',
                       is_mp4=True, id='ssds')
     return render_template('watch/index.html', movie=fakeMovie)
+
+
+@login_required
+@bp.route('/watch/vids/<movie_id>')
+def screen_it(movie_id):
+    movie_repo = MovieRepository(get_db())
+    movie = movie_repo.find_by_id(movie_id)
+    if movie is None:
+        flash('Requested movie not found')
+        return redirect(request.url)
+
+    return render_template('watch/index.html', movie=movie)
 
 
 def partial_response(path, start, end=None):

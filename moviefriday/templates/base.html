@@ -1,6 +1,12 @@
 <!doctype html>
-<title>{% block title %}{% endblock %} - Flaskr</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<html>
+<head>
+    <title>{% block title %}{% endblock %} - Flaskr</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootswatch.lux.min.cs') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+</head>
+<body>
 <nav>
     <h1>Movie Friday</h1>
     <ul>
@@ -22,3 +28,5 @@
     {% endfor %}
     {% block content %}{% endblock %}
 </section>
+</body>
+</html>

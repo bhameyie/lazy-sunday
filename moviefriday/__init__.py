@@ -1,32 +1,17 @@
 import os
-from contextlib import contextmanager
 
 from flask import Flask
 
 
-
 def create_app(test_config=None):
     # create and configure the app
-    app = Flask(__name__, instance_relative_config=True)
-    app.config.from_mapping(
-        SECRET_KEY='dev',
-        DATABASE=os.path.join(app.instance_path, 'moviefriday.sqlite'),
-        MONGO_URI='mongodb://localhost'
-    )
+    app = Flask(__name__, instance_relative_config=False)
 
-    if test_config is None:
-        # load the instance config, if it exists, when not testing
-        app.config.from_pyfile('config.py', silent=True)
-    else:
-        # load the test config if passed in
-        app.config.from_mapping(test_config)
+    app_setting = 'appsettings.py'
+    app.config.from_pyfile(app_setting)
 
-    from . import auth
-    app.register_blueprint(auth.bp)
-
-    from . import watch
-    app.register_blueprint(watch.bp)
-    app.add_url_rule('/', endpoint='index')
+    if test_config is not None:
+        app.config.update(test_config)
 
     # ensure the instance folder exists
     try:
@@ -35,8 +20,16 @@ def create_app(test_config=None):
         pass
 
     # a simple page that says hello
-    @app.route('/hello')
+    @app.route('/health')
     def hello():
-        return 'Hello, World!'
+        return 'All good!'
+
+    from moviefriday import auth, watch, db, upload
+    db.init_app(app)
+    app.register_blueprint(auth.bp)
+    app.register_blueprint(watch.bp)
+    app.register_blueprint(upload.bp)
+
+    app.add_url_rule('/', endpoint='index')
 
     return app

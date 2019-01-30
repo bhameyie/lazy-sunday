@@ -6,8 +6,8 @@ from flask import (
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from .db import get_db
-from .repositories import UserRepository, User
+from moviefriday.db import get_db
+from moviefriday.repositories import UserRepository, User
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -15,11 +15,10 @@ bp = Blueprint('auth', __name__, url_prefix='/auth')
 @bp.route('/register', methods=('GET', 'POST'))
 def register():
     if request.method == 'POST':
+        user_repository = UserRepository(get_db())
         username = request.form['username']
         password = request.form['password']
-        db = get_db()
         error = None
-        user_repository = UserRepository(db)
 
         if not username:
             error = 'Username is required.'
@@ -29,7 +28,7 @@ def register():
             error = 'User {} is already registered.'.format(username)
 
         if error is None:
-            user_repository.insert(User(username=username,id=ObjectId(), password=generate_password_hash(password)))
+            user_repository.insert(User(username=username, password=generate_password_hash(password)))
             return redirect(url_for('auth.login'))
 
         flash(error)
@@ -40,11 +39,10 @@ def register():
 @bp.route('/login', methods=('GET', 'POST'))
 def login():
     if request.method == 'POST':
+        user_repository = UserRepository(get_db())
         username = request.form['username']
         password = request.form['password']
-        db = get_db()
         error = None
-        user_repository = UserRepository(db)
         user = user_repository.find_by_username(username)
 
         if user is None:
@@ -70,12 +68,12 @@ def logout():
 
 @bp.before_app_request
 def load_logged_in_user():
+    user_repository = UserRepository(get_db())
     user_id = session.get('user_id')
 
     if user_id is None:
         g.user = None
     else:
-        user_repository = UserRepository(get_db())
         g.user = user_repository.find_by_id(user_id)
 
 

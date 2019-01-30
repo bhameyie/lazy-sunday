@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block header %}
+    <h1>{% block title %}Successful Upload of {{ movie.title }}{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+
+    <a href="{{ url_for('watch.screen_it',movie_id=movie.id)}}"> Watch it now</a>
+{% endblock %}
