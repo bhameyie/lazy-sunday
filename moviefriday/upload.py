@@ -1,18 +1,21 @@
 import os
 
+import flask
 from flask import (
-    Blueprint, flash, redirect, render_template, request, url_for, current_app
-)
+    Blueprint, flash, redirect, render_template, request, url_for, current_app,
+    Flask)
 from werkzeug.utils import secure_filename
 
 from moviefriday import vidconvert
 from moviefriday.auth import login_required
 from moviefriday.db import get_db
 from moviefriday.repositories import Movie, MovieRepository
+import logging
 
 ALLOWED_MOVIE_EXTENSIONS = ['mp4']
 
 bp = Blueprint('upload', __name__)
+
 
 
 @bp.route('/movies/uploaded/<movie_id>')
@@ -26,8 +29,11 @@ def uploaded_file(movie_id):
 @login_required
 def upload_file():
     if request.method == 'POST':
+        print(request.form)
         movie_title = request.form['title']
-        force_replace = request.form['forceReplace']
+        force_replace = 'forceReplace' in request.form
+
+        print('Dealing wth POST')
 
         if not movie_title:
             flash('Movie title required')
@@ -64,7 +70,7 @@ def _upload_movie(file, force_replace, movie_title):
     file.save(filepath)
     movie_id = ''
 
-    if request.form['convert']:
+    if 'convert' in request.form:
         model = vidconvert.make_default_req(filename, filepath)
         conversion = vidconvert.convert_mp4(model, force_replace)
 

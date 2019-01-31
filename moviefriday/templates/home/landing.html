@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block header %}
+    <h1>{% block title %}Welcome{% endblock %}</h1>
+{% endblock %}
+{% block content %}
+    <div class="jumbotron">
+        <h1 class="display-3">Movie Friday in the Office</h1>
+        <p class="lead">It's to "improve team synergy and morale through the use of pre-recorded material".</p>
+        <hr class="my-4">
+        <p>Not yet registered?</p>
+        <p class="lead">
+            <a class="btn btn-primary btn-lg" href="{{ url_for("auth.register") }}" role="button">Sign Up</a>
+        </p>
+    </div>
+{% endblock %}

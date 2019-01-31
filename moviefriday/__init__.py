@@ -24,12 +24,13 @@ def create_app(test_config=None):
     def hello():
         return 'All good!'
 
-    from moviefriday import auth, watch, db, upload
+    from moviefriday import auth, watch, db, upload, home
     db.init_app(app)
     app.register_blueprint(auth.bp)
     app.register_blueprint(watch.bp)
     app.register_blueprint(upload.bp)
+    app.register_blueprint(home.bp)
 
-    app.add_url_rule('/', endpoint='index')
+    # app.add_url_rule('/', endpoint='index')
 
     return app

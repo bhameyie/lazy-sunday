@@ -8,7 +8,8 @@
     <form method=post enctype=multipart/form-data>
         <label for="title">Title</label>
         <input name="title" id="title" required>
-        <input type="checkbox" name="convert" value="true" checked>Convert to HSL<br>
+        <input type="checkbox" id="convert" name="convert" value="true" checked>Convert to HSL<br>
+        <input type="checkbox" id="forceReplace" name="forceReplace" value="true">Auto Replace existing<br>
 
         <input type=file name=file>
         <input type=submit value=Upload>

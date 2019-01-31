@@ -26,7 +26,7 @@ def make_default_req(filename, filepath):
 def convert_mp4(requirement: ConversionRequirement, force_replace=False):
     ffmpeg = _get_ffmpeg()
 
-    new_folder = os.path.join(os.getcwd(), current_app.config['HLS_DIR'], requirement.filename)
+    new_folder = os.path.join( current_app.config['HLS_DIR'], requirement.filename)
 
     if os.path.isdir(new_folder):
         if force_replace:
@@ -47,13 +47,13 @@ def convert_mp4(requirement: ConversionRequirement, force_replace=False):
 def _get_ffmpeg():
     platform_name = platform.system().lower()
     if platform_name == 'darwin':
-        return os.path.join(os.getcwd(), current_app.config['TOOLS_DIR'], 'ffmpeg.osx')
+        return os.path.join( current_app.config['TOOLS_DIR'], 'ffmpeg.osx')
 
     if platform_name == 'windows':
         arch = platform.architecture()
         if arch[0].lower() == '32bit':
-            return os.path.join(os.getcwd(), current_app.config['TOOLS_DIR'], 'ffmpeg.win32.exe')
-        return os.path.join(os.getcwd(), current_app.config['TOOLS_DIR'], 'ffmpeg.win64.exe')
+            return os.path.join(current_app.config['TOOLS_DIR'], 'ffmpeg.win32.exe')
+        return os.path.join(current_app.config['TOOLS_DIR'], 'ffmpeg.win64.exe')
 
     return "ffmpeg"
 
@@ -64,4 +64,4 @@ def _run_ffmpeg(ffmpeg, new_folder, requirement):
         requirement.hls_list_size, requirement.filename).split(' ')
     with utils.chdir(new_folder):
         ran = subprocess.run([ffmpeg] + argu)
-        return {"suceeded": ran.returncode == 0, "reason": ran.stderr}
+        return {"succeeded": ran.returncode == 0, "reason": ran.stderr}

@@ -1,15 +1,27 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Log In{% endblock %}</h1>
+    <h1>{% block title %}Log In{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
-  <form method="post">
-    <label for="username">Username</label>
-    <input name="username" id="username" required>
-    <label for="password">Password</label>
-    <input type="password" name="password" id="password" required>
-    <input type="submit" value="Log In">
-  </form>
+    <div class="row">
+        <div class="col-lg-6">
+            <form method="post">
+                <div class="form-group">
+                    <label for="username">Email address</label>
+                    <input type="text" class="form-control" id="username" name="username" aria-describedby="emailHelp"
+                           placeholder="Enter UserName" required>
+                    <small id="emailHelp" class="form-text text-muted">Enter the username used to create your account.
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" name="password" id="password" required>
+                </div>
+                <input type="submit" class="btn btn-primary" value="Log In">
+            </form>
+        </div>
+    </div>
 {% endblock %}

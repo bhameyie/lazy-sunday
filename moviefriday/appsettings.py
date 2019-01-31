@@ -1,11 +1,11 @@
 import os
 
 MONGO_URI = 'mongodb://localhost'
-HLS_DIR = 'hls_stash'
-TOOLS_DIR = 'tools'
+HLS_DIR = os.path.join(os.getcwd(), 'hls_stash')
+TOOLS_DIR = os.path.join(os.getcwd(), 'tools')
+UPLOAD_FOLDER = os.path.join(os.getcwd(), 'mp4_stash')
 SECRET_KEY = 'dev'
-UPLOAD_FOLDER = 'mp4_stash'
-MONGO_DB ='flixdb'
+MONGO_DB = 'flixdb'
 DEBUG = True
 
 IN_PROD = os.environ.get("MOVIEFRIDAY_INPROD", default=False)

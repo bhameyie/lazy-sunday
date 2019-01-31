@@ -22,15 +22,6 @@ BUFF_SIZE = 10 * MB
 
 
 @login_required
-@bp.route('/')
-def index():
-    movie_repo = MovieRepository(get_db())
-    fakeMovie = Movie(title="Bunny", blob_id='BigBuckBunny.mp4',
-                      is_mp4=True, id='ssds')
-    return render_template('watch/index.html', movie=fakeMovie)
-
-
-@login_required
 @bp.route('/watch/vids/<movie_id>')
 def screen_it(movie_id):
     movie_repo = MovieRepository(get_db())

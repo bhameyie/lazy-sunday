@@ -28,12 +28,18 @@ def register():
             error = 'User {} is already registered.'.format(username)
 
         if error is None:
-            user_repository.insert(User(username=username, password=generate_password_hash(password)))
-            return redirect(url_for('auth.login'))
+            user_id = user_repository.insert(User(username=username, password=generate_password_hash(password)))
+            return redirect_home_asnew(user_id)
 
         flash(error)
 
     return render_template('auth/register.html')
+
+
+def redirect_home_asnew(user_id):
+    session.clear()
+    session['user_id'] = str(user_id)
+    return redirect(url_for('home.index'))
 
 
 @bp.route('/login', methods=('GET', 'POST'))
@@ -51,9 +57,7 @@ def login():
             error = 'Incorrect password.'
 
         if error is None:
-            session.clear()
-            session['user_id'] = str(user.id)
-            return redirect(url_for('watch.index'))
+            return redirect_home_asnew(user.id)
 
         flash(error)
 
@@ -63,7 +67,7 @@ def login():
 @bp.route('/logout')
 def logout():
     session.clear()
-    return redirect(url_for('watch.index'))
+    return redirect(url_for('home.index'))
 
 
 @bp.before_app_request
@@ -82,6 +86,17 @@ def login_required(view):
     def wrapped_view(**kwargs):
         if g.user is None:
             return redirect(url_for('auth.login'))
+
+        return view(**kwargs)
+
+    return wrapped_view
+
+
+def no_auth_only(view):
+    @functools.wraps(view)
+    def wrapped_view(**kwargs):
+        if g.user is not None:
+            return redirect(url_for('home.index'))
 
         return view(**kwargs)
 
