@@ -6,12 +6,14 @@ import os
 import re
 
 from flask import (
-    Blueprint, render_template, request, Response, flash, redirect
-)
+    Blueprint, render_template, request, Response, flash, redirect, current_app,
+    jsonify)
 
 from moviefriday.repositories import Movie, MovieRepository
 from moviefriday.auth import login_required
 from moviefriday.db import get_db
+from flask import send_from_directory
+from flask import abort
 
 LOG = logging.getLogger(__name__)
 
@@ -87,10 +89,62 @@ def get_range(request):
 @bp.route('/vids/<movie_id>/mp4')
 @login_required
 def mp4_video(movie_id):
-    # validate movie exists and movie is_mp4
+    movie_repo = MovieRepository(get_db())
+    movie = movie_repo.find_by_id(movie_id)
 
-    movie = Movie(title="Bunny", blob_id='BigBuckBunny.mp4',
-                  is_mp4=True, id='dssd')
-    file_path = os.path.join(os.getcwd(), 'mp4_stash', movie.blob_id)
+    if movie is None:
+        abort(404, "Movie could not be found")
+
+    if not movie.is_mp4:
+        abort(404, "Could not find an MP4 movie with the provided id")
+
+    file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], movie.blob_id)
     start, end = get_range(request)
     return partial_response(file_path, start, end)
+
+
+@bp.route('/vids/<movie_id>/hsl')
+@login_required
+def hsl_video(movie_id):
+    movie_repo = MovieRepository(get_db())
+    movie = movie_repo.find_by_id(movie_id)
+
+    if movie is None:
+        abort(404, "Movie could not be found")
+
+    if movie.is_mp4:
+        abort(404, "Could not find an HSL converted movie with the provided id")
+
+    file_dir = os.path.join(current_app.config['HLS_DIR'], movie.blob_id)
+    return send_from_directory(file_dir, "{0}.m3u8".format(movie.blob_id))
+
+
+@bp.route('/vids/<movie_id>/<file_name>')
+@login_required
+def hsl_fragment(movie_id, file_name):
+    movie_repo = MovieRepository(get_db())
+    movie = movie_repo.find_by_id(movie_id)
+
+    if movie is None:
+        abort(404, "Movie could not be found")
+
+    if movie.is_mp4:
+        abort(404, "Could not find an HSL converted movie with the provided id")
+
+    file_dir = os.path.join(current_app.config['HLS_DIR'], movie.blob_id)
+    return send_from_directory(file_dir, file_name)
+
+
+@bp.route('/api/vids/search', defaults={
+    'search_text': None,
+    'page': None,
+    'size': None})
+@login_required
+def search_movies(search_text, page, size):
+    movie_repo = MovieRepository(get_db())
+    if search_text is None:
+        movies = movie_repo.find_all(page, size)
+    else:
+        movies = movie_repo.find_by_keyword(search_text, page, size)
+
+    return jsonify(movies)

@@ -5,4 +5,10 @@
 
 {% block content %}
     <h3>Sweet HOME</h3>
+
+    {% for movie in movies %}
+        <li class="{{ loop.cycle('odd', 'even') }}">
+            <a href="{{ url_for("watch.screen_it", movie_id=movie.id)}}"> {{ movie.title }} - {{ movie.description }}</a>
+        </li>
+    {% endfor %}
 {% endblock %}

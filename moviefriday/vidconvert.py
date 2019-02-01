@@ -26,7 +26,7 @@ def make_default_req(filename, filepath):
 def convert_mp4(requirement: ConversionRequirement, force_replace=False):
     ffmpeg = _get_ffmpeg()
 
-    new_folder = os.path.join( current_app.config['HLS_DIR'], requirement.filename)
+    new_folder = os.path.join(current_app.config['HLS_DIR'], requirement.filename)
 
     if os.path.isdir(new_folder):
         if force_replace:
@@ -47,7 +47,7 @@ def convert_mp4(requirement: ConversionRequirement, force_replace=False):
 def _get_ffmpeg():
     platform_name = platform.system().lower()
     if platform_name == 'darwin':
-        return os.path.join( current_app.config['TOOLS_DIR'], 'ffmpeg.osx')
+        return os.path.join(current_app.config['TOOLS_DIR'], 'ffmpeg.osx')
 
     if platform_name == 'windows':
         arch = platform.architecture()

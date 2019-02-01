@@ -17,9 +17,8 @@ ALLOWED_MOVIE_EXTENSIONS = ['mp4']
 bp = Blueprint('upload', __name__)
 
 
-
 @bp.route('/movies/uploaded/<movie_id>')
-def uploaded_file(movie_id):
+def uploaded_movie(movie_id):
     movie_repo = MovieRepository(get_db())
     movie = movie_repo.find_by_id(movie_id)
     return render_template('upload/movie_uploaded.html', movie=movie)
@@ -74,7 +73,7 @@ def _upload_movie(file, force_replace, movie_title):
         model = vidconvert.make_default_req(filename, filepath)
         conversion = vidconvert.convert_mp4(model, force_replace)
 
-        if conversion["suceeded"]:
+        if conversion["succeeded"]:
             new_movie = Movie(title=movie_title, blob_id=filename, is_mp4=False)
             movie_id = movie_repo.insert(new_movie)
         else:
