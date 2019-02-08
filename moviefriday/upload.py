@@ -13,7 +13,7 @@ from moviefriday.repositories import Movie, MovieRepository
 import logging
 from os import listdir
 
-ALLOWED_MOVIE_EXTENSIONS = ['mp4', 'mkv']
+ALLOWED_MOVIE_EXTENSIONS = ['mp4']
 
 bp = Blueprint('upload', __name__)
 

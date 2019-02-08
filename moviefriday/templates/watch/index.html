@@ -14,78 +14,37 @@
         </video>
     {% else %}
         <b>Will be loading m3u8 file here</b>
+        <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+        <video id="video" controls requestFullScreen></video>
+        <script>
+            var video = document.getElementById('video');
+            if (Hls.isSupported()) {
+                var hls = new Hls();
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MEDIA_ATTACHED, function () {
+                    console.log("video and hls.js are now bound together !");
 
-        <video-js id=vid1 width=600 height=300 class="vjs-default-skin" controls>
-        </video-js>
-        <script src="https://vjs.zencdn.net/7.2.3/video.js"></script>
-        <script src="https://unpkg.com/@videojs/http-streaming@1.3.1/dist/videojs-http-streaming.min.js"></script>
-         <script>
-        var player = videojs('vid1', {
-            controls: true,
-            autoplay: false,
-            preload: 'auto',
-        });
-        player.src({
-            src: '{{ url_for("watch.hsl_video",movie_id=movie.id) }}',
-            type: 'application/x-mpegURL',
-            // withCredentials: true
-        });
-        player.on('progress', function () {
-            console.log('progressing;')
-            console.log(player.currentTime());
-            console.log(player.duration());
+                    hls.loadSource('{{ url_for("watch.hsl_video",movie_id=movie.id) }}');
+                    hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
+                        console.log("manifest loaded, found " + data.levels.length + " quality level");
 
-            var progress = player.currentTime()*100.0/player.duration();
-            console.log(progress);
-        })
+                        hls.startLoad(startPosition=0)
+                        video.play();
+                    });
+                });
 
-        player.on('ratechange', function () {
-            console.log('rate of play is  changing....')
-        });
+                hls.on(Hls.Events.ERROR, function (event, data) {
+                    console.log(data)
+                });
 
-        player.on('playing',function(){
-            console.log('it restarted....should force into full screen mode here....assuming isnt already full screen')
-        });
+            }
+            else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = '{{ url_for("watch.hsl_video",movie_id=movie.id) }}';
+                video.addEventListener('canplay', function () {
+                    video.play();
+                });
+            }
+        </script>
 
-        player.on('play',function(){
-            console.log('it started....should force into full screen mode here;')
-        });
-
-        player.on('stalled', function () {
-            console.log('problem getting data. things are stalled')
-        });
-
-        player.on('suspend', function () {
-            console.log('stream suspended')
-        });
-
-        player.on('emptied', function () {
-            console.log('nothing else to play...?');
-        });
-
-        player.on('ended', function () {
-            console.log('done!');
-        });
-
-        player.on('canplaythrough', function () {
-            console.log('smooth sailing');
-        });
-
-        player.ready(function () {
-            player.play();
-
-           // var hls = player.tech().hls;
-           // player.currentTime(171.236112);
-
-            console.log(hls.duration())
-        });
-
-        player.on('error', function (x) {
-            console.log(x)
-        });
-        player.on('loadstart', function (x) {
-            console.log(x)
-        });
-    </script>
     {% endif %}
 {% endblock %}
